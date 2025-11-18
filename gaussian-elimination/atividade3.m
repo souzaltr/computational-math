@@ -1,11 +1,11 @@
 function atividade3 ()
-    A = [ 1  1 -3;
-         2  0  1;
-        -7 -2  1];
+    A = [ 1  1 -3 ;
+          2  0  1 ;
+         -7 -2  1 ];
 
-    B = [-17;
-          12;
-         -11];
+    B = [ -17;
+           12;
+          -11];
 
     num_lines = size(A,1);
 
@@ -13,10 +13,36 @@ function atividade3 ()
     AB = [A B]
 
     printf('\nA|B matrix after partial pivoting\n');
-    AB_pivot = pivot(AB, num_lines)
+    AB = pivot(AB, num_lines)
 
-    printf('\nSolution after Gaussian elimination\n');
-    solution = gaussianElimination(AB, num_lines)
+    printf('\nLinear system to be solved: \n\n');
+    for i = 1 : num_lines
+        for j = 1 : size(A,2)
+            coef = A(i,j);
+            if j == 1
+                if coef < 0
+                    fprintf('-%.2fx%d ', abs(coef), j);
+                else
+                    fprintf('%.2fx%d ', coef, j);
+                end
+            else
+                if coef < 0
+                    fprintf('- %.2fx%d ', abs(coef), j);
+                else
+                    fprintf('+ %.2fx%d ', coef, j);
+                end
+            end
+        end
+        printf(' = %.2f', B(i));
+        printf('\n');
+    end
+
+    solution = gaussianElimination(AB, num_lines);
+    printf('\n\nThe independent terms of the solution are:\n\n');
+    for i = 1 : num_lines
+      fprintf('x%d = %.2f\n', i, solution(i));
+    end
+
 end
 
 function AB = pivot(AB, num_lines)
@@ -39,8 +65,8 @@ function solution = gaussianElimination(AB, num_lines)
     for i = 1 : num_lines - 1
         %Loop over the rows below the current pivot element 'i'. Eliminating elements below it.
         for j = i + 1 : num_lines
-        factor= AB(j,i) / AB(i,i);
-        AB(j, :) = AB(j, :) - factor * AB(i, :);
+            factor= AB(j,i) / AB(i,i);
+            AB(j, :) = AB(j, :) - factor * AB(i, :);
         end
     end
 
