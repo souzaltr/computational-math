@@ -1,6 +1,6 @@
 function atividade1()
   x_lower=0;
-  x_upper=1;
+  x_upper=5;
 
   tolerance= 10.^-5;
 
@@ -19,13 +19,12 @@ function atividade1()
 
   plot_convergence(all_fxr);
   plot_convergence_x(root, all_xr);
-  plot_animation(all_xr, iterations);
+  plot_animation(all_xr, iterations, x_lower, x_upper);
 end
 
 %Caso seja feita uma operação de potência, usar o ponto '.' no escalar pois depois usaremos op. vetorial
 function y = f(x)
-  %y = 16 .* x .* sin(x./10) - (37/2);
-  y = x.^3 + 2 * x.^2 - 2;
+  y = 16 .* x .* sin(x./10) - (37/2)
 end
 
 function  [root, i, all_xr, all_fxr] = false_position(x_lower, x_upper, tolerance, max_iterations);
@@ -49,7 +48,6 @@ function  [root, i, all_xr, all_fxr] = false_position(x_lower, x_upper, toleranc
         x_lower = xr;
         else x_upper = xr;
       end
-
 
     end
 
@@ -92,14 +90,14 @@ function plot_convergence_x(root, all_xr)
   grid on;
 end
 
-function plot_animation(all_xr, iterations)
+function plot_animation(all_xr, iterations, x_lower, x_upper)
   figure(3);
 
   for cont = 1: iterations
     clf;
     hold on;
 
-    x_curve = linspace(0.0, 5.0, 100);
+    x_curve = linspace(x_lower, x_upper, 15);
     plot(x_curve, f(x_curve), 'g-', 'LineWidth', 2.0);
 
     current_xr = all_xr(cont);

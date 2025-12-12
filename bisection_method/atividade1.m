@@ -19,13 +19,12 @@ function atividade1 ()
 
   plot_convergence(all_fxr);
   plot_convergence_x(root, all_xr);
-  plot_animation(all_xr, iterations);
+  plot_animation(all_xr, iterations, x_lower, x_upper);
 end
 
 function [root, iterations, all_xr, all_fxr] = bisection_method(x_lower, x_upper, tolerance, max_iterations)
 
   xr = inf;
-  fxlower = myfunction(x_lower);
 
   all_xr = zeros(1,max_iterations);
   all_fxr = zeros(1,max_iterations);
@@ -47,15 +46,14 @@ function [root, iterations, all_xr, all_fxr] = bisection_method(x_lower, x_upper
       break
     endif
 
-    if  (fxlower * fxr < 0)
+    if  (myfunction(x_lower) * fxr < 0)
       x_upper = xr;
 
-      elseif  (fxlower * fxr > 0)
+      elseif  (myfunction(x_lower) * fxr > 0)
         x_lower = xr;
-        fxlower = fxr;
 
-        elseif (fxlower * fxr == 0)
-          break
+        elseif (myfunction(x_lower) * fxr == 0)
+           break
     endif
   end
 
@@ -101,14 +99,14 @@ function plot_convergence_x(root, all_xr)
   grid on;
 end
 
-function plot_animation(all_xr, iterations)
+function plot_animation(all_xr, iterations, x_lower, x_upper)
   figure(3);
 
   for cont = 1: iterations
     clf;
     hold on;
 
-    x_curve = linspace(0.0, 5.0, 100);
+    x_curve = linspace(x_lower, x_upper, 100);
     plot(x_curve, myfunction(x_curve), 'g-', 'LineWidth', 2.0);
 
     current_xr = all_xr(cont);
