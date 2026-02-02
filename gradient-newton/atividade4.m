@@ -1,5 +1,5 @@
 function atividade4 ()
-  alpha = 0.002;
+  alpha = 0.5;
   maxIterations = 1000;
   tolerance = 10.^-3;
 
@@ -21,13 +21,12 @@ function atividade4 ()
   % Matriz Hessiana - matriz quadrada, sendo [Fxx , Fxy; Fxx, Fyy]
   hessian = @(x) [
 
-       18 * pi^2 * cos(6 * pi * x(1)) + 2 + 2 * sin(9 * pi^2 * x(2)^2), ...
-       36 * pi^2 * x(1) * x(2) * cos(9 * pi^2 * x(2)^2) - 36 * pi^2 * x(2) * cos(9 * pi^2 * x(2)); ...
+       18 * pi^2 * cos(6 * pi * x(1)) + 2 * (1 + sin(3 * pi * x(2))^2), ...
+       6 * pi * (x(1) - 1) * sin(6 * pi * x(2)); ...
 
-       3 * pi * sin(6 * pi * x(2)) * (2 * x(1) -2), ...
-       (x(1)^2 - 2*x(1) - 1) * 18*pi^2 * cos(6*pi*x(2)) + 2 + 2 * sin(4*pi^2*x(2)^2) + 16*pi^2*x(2)^2 * ...
-       cos(4* pi^2 * x(2)^2) - 16*pi^2*x(2) * cos(4* pi^2 * x(2)^2) + 8*pi^2 * cos(4*pi*x(2)) * ...
-       (x(2)^2 - 2 * x(2) + 1) + 2*pi * sin(4*pi*x(2)) * (2 * x(2) - 2)];
+       6 * pi * (x(1) - 1) * sin(6 * pi * x(2)), ...
+       18 * pi^2 * (x(1) - 1)^2 * cos(6 * pi * x(2)) + 2 * (1 + sin(2* pi * x(2))^2) + ...
+       8*pi*(x(2) - 1) * sin(4*pi*x(2)) + 8*pi^2*(x(2) - 1)^2 * cos(4*pi*x(2))];
 
   % Chamada do metodo numerico do Gradiente
   [x_opt, f_opt, iterations, allX, allFX] = gradientMethod(x0, alpha, F, gradient, maxIterations, tolerance);
@@ -39,7 +38,7 @@ function atividade4 ()
   fprintf('Distância do ponto otimo [1;1]: %.6f\n\n', norm(x_opt - [1;1]));
 
   % Chamada do metodo numerico de Newton
-  [x_newton, f_newton, iterations, allX_newton, allFX_newton] = newtonMethod(x0, 1, F, gradient, hessian, maxIterations, tolerance);
+  [x_newton, f_newton, newton_iterations, allX_newton, allFX_newton] = newtonMethod(x0, alpha, F, gradient, hessian, maxIterations, tolerance);
   fprintf('METODO NEWTON\n\n');
   fprintf('O ponto minimo encontrado: [%.6f; %.6f]\n', x_newton(1), x_newton(2));
   fprintf('O gradiente no ponto encontrado e: [%.6f; %.6f] \nIteracoes feitas: %d\n', gradient(x_newton), iterations);
@@ -47,10 +46,10 @@ function atividade4 ()
   fprintf('Distância do ponto otimo [1;1]: %.6f\n', norm(x_newton - [1;1]));
 
   % Plotagens da convergencia da funcao, das variaveis e 3d animado
-  % PARA PLOTAR OS DADOS DO OUTRO METODO BASTA ALTERAR OS ARGUMENTOS (allFX , allX)
-  plotConvergence(allFX_newton);
-  plotConvergenceX(allX_newton);
-  plot3D(F, allX_newton, allFX_newton, iterations);
+  % PARA PLOTAR OS DADOS DO OUTRO METODO BASTA ALTERAR OS ARGUMENTOS (allFX , allX, iterations)
+  plotConvergence(allFX);
+  plotConvergenceX(allX);
+  plot3D(F, allX, allFX, iterations);
 endfunction
 
 function [x_final, f_final, iterations, allX, allFX] = gradientMethod (x0, alpha, f, grad, maxIterations, tolerance)
@@ -164,26 +163,29 @@ function plot3D(F, allX, allFX, iterations)
     end
 
     % Plota a superficie - surf espera que as colunas de Z sejam o eixo x e linhas o eixo y
-    surf(axisX, axisY, Z', 'FaceAlpha', 0.4);
+    surf(axisX, axisY, Z', 'FaceAlpha', 1);
     hold on;
     grid on;
     view(150, 45);
     xlabel('x1');
     ylabel('x2');
     zlabel('f(x1, x2)');
-    title('Grafico animado da otimizacao - Funcao Levy n.13');
+    title('Grafico animado da otimizacao - Funcao Levy n.13', 'FontSize', 14);
     colormap jet;
 
+
     % Plota o rastro
-    plot3(allX(:, 1), allX(:, 2), allFX, 'r-', 'linewidth', 10);
+    plot3(allX(:, 1), allX(:, 2), allFX, 'r-', 'linewidth', 3);
 
     % Plota a bolinha
-    point = plot3(allX(1,1), allX(1,2), allFX(1), 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 16);
+    point = plot3(allX(1,1), allX(1,2), allFX(1), 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 10);
+    legend('Superficie da funcao', 'Rastro', 'Ponto ótimo estimado', 'FontSize', 14);
+    pause(1.5);
 
     % Loop de animacao, usando o set para atualizar os argumentos na chamada de point
-    for i = 1 : iterations + 1
+    for i = 2 : iterations + 1
       set(point, 'XData', allX(i,1), 'YData', allX(i,2), 'ZData', allFX(i));
-      title(sprintf('Iteração: %d', i-1));
-      pause(1);
+      title(sprintf('Grafico animado da otimizacao - Funcao Levy n.13\nIteração: %d', i-1), 'FontSize', 14);
+      pause(1.3);
     end
 endfunction
